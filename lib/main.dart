@@ -17,41 +17,30 @@ class MyApp extends StatelessWidget {
       title: 'Rotas Nomeadas',
       theme: ThemeData(
         primarySwatch: Colors.indigo,
-        cardTheme: CardTheme(
+        cardTheme: const CardThemeData(
           elevation: 2,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          margin: const EdgeInsets.symmetric(vertical: 8),
+          margin: EdgeInsets.symmetric(vertical: 8),
         ),
       ),
-      initialRoute: '/login',
+      initialRoute: '/',
       onGenerateRoute: (settings) {
-        // Rota pública que não precisa de verificação
-        if (settings.name == '/login') {
-          return MaterialPageRoute(builder: (context) => const LoginScreen());
-        }
-
-        // --- A PARTIR DAQUI, TODAS AS ROTAS SÃO PRIVADAS ---
-        
-        // Verifica se o usuário está autenticado
         if (AuthService.isAuthenticated) {
           switch (settings.name) {
+            case '/':
             case '/home':
               return MaterialPageRoute(builder: (context) => const HomeScreen());
             case '/profile':
-              // Para a rota de perfil, passamos os settings para que a tela
-              // possa extrair os argumentos.
               return MaterialPageRoute(
                 builder: (context) => const ProfileScreen(),
                 settings: settings,
               );
             default:
-              // Se a rota privada não existir, vai para a home
               return MaterialPageRoute(builder: (context) => const HomeScreen());
           }
+        } else {
+          return MaterialPageRoute(builder: (context) => const LoginScreen());
         }
-
-        // Se o usuário não estiver autenticado, redireciona para o login
-        return MaterialPageRoute(builder: (context) => const LoginScreen());
       },
     );
   }
